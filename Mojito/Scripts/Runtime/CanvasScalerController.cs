@@ -12,7 +12,13 @@ namespace IL.Mojito
         private Vector2 _albumReferenceResolution;
 
         [SerializeField]
+        private float _albumMatch;
+
+        [SerializeField]
         private Vector2 _portraitReferenceResolution;
+
+        [SerializeField]
+        private float _portraitMatch;
 
         private CanvasScaler _canvasScaler;
 
@@ -23,12 +29,12 @@ namespace IL.Mojito
             if (album)
             {
                 _canvasScaler.referenceResolution = _albumReferenceResolution;
-                _canvasScaler.matchWidthOrHeight = 1f;
+                _canvasScaler.matchWidthOrHeight = _albumMatch;
             }
             else
             {
                 _canvasScaler.referenceResolution = _portraitReferenceResolution;
-                _canvasScaler.matchWidthOrHeight = 0f;
+                _canvasScaler.matchWidthOrHeight = _portraitMatch;
             }
         }
 
