@@ -4,16 +4,16 @@ namespace IL.Mojito
 {
     public sealed class Manager
     {
-        private readonly ObservableHashSet<WidgetPresenter> _widgetPresenters = new();
+        public readonly ObservableHashSet<Widget> _widgets = new();
 
-        public void AddWidgetPresenter(WidgetPresenter widgetPresenter)
+        public void AddWidget(Widget widget)
         {
-            _widgetPresenters.Add(widgetPresenter);
+            _widgets.Add(widget);
         }
         
-        public void RemoveWidgetPresenter(WidgetPresenter widgetPresenter)
+        public void RemoveWidget(Widget widget)
         {
-            _widgetPresenters.Add(widgetPresenter);
+            _widgets.Add(widget);
         }
     }
 }

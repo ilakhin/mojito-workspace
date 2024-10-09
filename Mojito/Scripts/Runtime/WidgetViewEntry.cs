@@ -5,7 +5,7 @@ using UnityEngine;
 namespace IL.Mojito
 {
     [Serializable]
-    public sealed class WidgetEntry
+    public sealed class WidgetViewEntry
     {
         [Required]
         [SerializeField]
@@ -13,10 +13,10 @@ namespace IL.Mojito
 
         [Required]
         [SerializeField]
-        private Widget _widget;
+        private WidgetView _widgetView;
 
         public string Key => _key;
 
-        public Widget Widget => _widget;
+        public WidgetView WidgetView => _widgetView;
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ObservableCollections;
+using R3;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -12,28 +13,58 @@ namespace IL.Mojito
     {
         [SerializeField]
         [TableList]
-        private WidgetEntry[] _widgetEntries;
+        private WidgetViewEntry[] _widgetEntries;
 
-        private Dictionary<string, Widget> _widgetTemplates;
-        private Dictionary<WidgetPresenter, Widget> _widgets;
-        
-        private Dictionary<string, Widget> WidgetTemplates => _widgetTemplates ??= _widgetEntries
-            .ToDictionary(static entry => entry.Key, static entry => entry.Widget, StringComparer.Ordinal);
+        private Dictionary<string, WidgetView> _widgetViewTemplates;
+        private Dictionary<Widget, WidgetView> _widgetViews;
 
-        private Dictionary<WidgetPresenter, Widget> Widgets => _widgets ??= new Dictionary<WidgetPresenter, Widget>();
-        
-        public void Initialize(ObservableHashSet<WidgetPresenter> widgetPresenters)
+        private Dictionary<string, WidgetView> WidgetViewTemplates => _widgetViewTemplates ??= _widgetEntries
+            .ToDictionary(static entry => entry.Key, static entry => entry.WidgetView, StringComparer.Ordinal);
+
+        private Dictionary<Widget, WidgetView> WidgetViews => _widgetViews ??= new Dictionary<Widget, WidgetView>();
+
+        public void Initialize(ObservableHashSet<Widget> widgets)
         {
-            foreach (var widgetPresenter in widgetPresenters)
+            foreach (var widget in widgets)
             {
-                var widgetTemplate = WidgetTemplates[widgetPresenter.WidgetKey];
-                var widget = Instantiate(widgetTemplate, transform);
-                
-                widgetPresenter.Initialize(widget);
-                
-                Widgets.Add(widgetPresenter, widget);
+                CreateWidgetView(widget);
             }
+
+            widgets
+                .ObserveAdd(destroyCancellationToken)
+                .Subscribe(this, static (addEvent, popup) => popup.CreateWidgetView(addEvent.Value))
+                .AddTo(this);
+
+            widgets
+                .ObserveRemove(destroyCancellationToken)
+                .Subscribe(this, static (removeEvent, popup) => popup.DestroyWidgetView(removeEvent.Value))
+                .AddTo(this);
         }
-        
+
+        public void Release()
+        {
+        }
+
+        private void CreateWidgetView(Widget widget)
+        {
+            var widgetViewTemplate = WidgetViewTemplates[widget.ViewKey];
+            var widgetView = Instantiate(widgetViewTemplate, transform);
+
+            widgetView.Initialize(widget.Model, destroyCancellationToken);
+
+            WidgetViews.Add(widget, widgetView);
+        }
+
+        private void DestroyWidgetView(Widget widget)
+        {
+            if (!WidgetViews.Remove(widget, out var widgetView))
+            {
+                return;
+            }
+
+            widgetView.Release();
+
+            Destroy(widgetView.gameObject);
+        }
     }
 }
