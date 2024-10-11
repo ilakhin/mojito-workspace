@@ -1,6 +1,6 @@
 namespace IL.Mojito
 {
-    public abstract class ButtonTextModel : WidgetModel
+    public sealed class ButtonTextModel : WidgetModel
     {
         public readonly ButtonModel ButtonModel;
         public readonly TextModel TextModel;

@@ -16,7 +16,7 @@ namespace IL.Mojito
             base.OnInitialize(model, cancellationToken);
 
             OnClickAsObservable(_button)
-                .Subscribe(model, static (_, model) => model.OnClick())
+                .Subscribe(model, static (unit, model) => model.Click.OnNext(unit))
                 .RegisterTo(cancellationToken);
         }
 
